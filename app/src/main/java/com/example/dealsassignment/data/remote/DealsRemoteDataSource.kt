@@ -31,7 +31,6 @@ class DealsRemoteDataSource : DealsDataSource {
 
     var retrofit = Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
-        //.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()

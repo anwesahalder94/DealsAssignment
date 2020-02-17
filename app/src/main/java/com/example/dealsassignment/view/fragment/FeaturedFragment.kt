@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dealsassignment.R
@@ -13,6 +14,7 @@ import com.example.dealsassignment.data.model.Datum
 import com.example.dealsassignment.data.model.DealsResponse
 import com.example.dealsassignment.data.remote.DealsRemoteDataSource
 import com.example.dealsassignment.presenter.DealsPresenter
+import com.example.dealsassignment.util.AppUtils
 import com.example.dealsassignment.util.Constants
 import com.example.dealsassignment.view.DealsContract
 import com.example.dealsassignment.view.adapter.DealsAdapter
@@ -38,11 +40,18 @@ class FeaturedFragment: Fragment(), DealsContract.DealsView {
 
         mProgressDialog = ProgressDialog(activity)
         mProgressDialog.setTitle("Please wait")
+        mProgressDialog.setCancelable(false)
 
         mDealsPresenter = DealsPresenter(DealsRepository(DealsRemoteDataSource()), this)
-        mDealsPresenter.processGetDeals(Constants.SESSION_TOKEN_VALUE, Constants.FEATURED_FRAGMENT)
-
-        mProgressDialog.show()
+        if (AppUtils.isNetworkAvailable(activity!!.applicationContext)) {
+            mProgressDialog.show()
+            mDealsPresenter.processGetDeals(
+                Constants.SESSION_TOKEN_VALUE,
+                Constants.FEATURED_FRAGMENT
+            )
+        }else{
+            Toast.makeText(activity!!.applicationContext, "Please check your internet", Toast.LENGTH_LONG).show()
+        }
         val layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         recycler_view?.setHasFixedSize(true)
@@ -53,18 +62,23 @@ class FeaturedFragment: Fragment(), DealsContract.DealsView {
 
     private fun onPullToRefresh() {
         pullToRefresh.setOnRefreshListener {
-            mDealsPresenter.processGetDeals(
-                Constants.SESSION_TOKEN_VALUE,
-                Constants.FEATURED_FRAGMENT
-            )
-            mProgressDialog.show()
+
+            if (AppUtils.isNetworkAvailable(activity!!.applicationContext)) {
+                mProgressDialog.show()
+                mDealsPresenter.processGetDeals(
+                    Constants.SESSION_TOKEN_VALUE,
+                    Constants.FEATURED_FRAGMENT
+                )
+            }else{
+                Toast.makeText(activity!!.applicationContext, "Please check your internet", Toast.LENGTH_LONG).show()
+            }
             mDealsAdapter!!.notifyDataSetChanged()
             pullToRefresh.isRefreshing = false
         }
     }
 
     private fun setAdapter(data: List<Datum>) {
-        mDealsAdapter = DealsAdapter(data.toMutableList())
+        mDealsAdapter = DealsAdapter(data.toMutableList(), activity!!.applicationContext)
         recycler_view?.adapter = mDealsAdapter
     }
 

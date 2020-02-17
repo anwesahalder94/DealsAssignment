@@ -2,7 +2,6 @@ package com.example.dealsassignment.view.fragment
 
 import android.app.ProgressDialog
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,16 +19,13 @@ import com.example.dealsassignment.view.adapter.DealsAdapter
 import kotlinx.android.synthetic.main.fragment_top.*
 import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.RecyclerView
-import com.example.dealsassignment.util.PaginationScrollListener
-import java.util.ArrayList
+import com.example.dealsassignment.util.AppUtils
 
 class TopFragment : Fragment(), DealsContract.DealsView {
 
     private var mDealsAdapter: DealsAdapter? = null
     private lateinit var mDealsPresenter: DealsPresenter
     private lateinit var mTopDealsResponse: DealsResponse
-    private lateinit var mTopDealsResponsePerPage: DealsResponse
     private lateinit var mProgressDialog: ProgressDialog
     lateinit var layoutManager: LinearLayoutManager
 
@@ -45,10 +41,15 @@ class TopFragment : Fragment(), DealsContract.DealsView {
 
         mProgressDialog = ProgressDialog(activity)
         mProgressDialog.setTitle("Please wait")
+        mProgressDialog.setCancelable(false)
 
         mDealsPresenter = DealsPresenter(DealsRepository(DealsRemoteDataSource()), this)
-        mDealsPresenter.processGetDeals(Constants.SESSION_TOKEN_VALUE, Constants.TOP_FRAGMENT)
-        mProgressDialog.show()
+        if (AppUtils.isNetworkAvailable(activity!!.applicationContext)) {
+            mProgressDialog.show()
+            mDealsPresenter.processGetDeals(Constants.SESSION_TOKEN_VALUE, Constants.TOP_FRAGMENT)
+        }else{
+            Toast.makeText(activity!!.applicationContext, "Please check your internet", Toast.LENGTH_LONG).show()
+        }
 
         layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -61,18 +62,22 @@ class TopFragment : Fragment(), DealsContract.DealsView {
 
     private fun onPullToRefresh() {
         pullToRefresh.setOnRefreshListener {
-            mDealsPresenter.processGetDeals(
-                Constants.SESSION_TOKEN_VALUE,
-                Constants.TOP_FRAGMENT
-            )
-            mProgressDialog.show()
+            if (AppUtils.isNetworkAvailable(activity!!.applicationContext)) {
+                mProgressDialog.show()
+                mDealsPresenter.processGetDeals(
+                    Constants.SESSION_TOKEN_VALUE,
+                    Constants.TOP_FRAGMENT
+                )
+            }else{
+                Toast.makeText(activity!!.applicationContext, "Please check your internet", Toast.LENGTH_LONG).show()
+            }
             mDealsAdapter!!.notifyDataSetChanged()
             pullToRefresh.isRefreshing = false
         }
     }
 
     private fun setAdapter(data: List<Datum>) {
-        mDealsAdapter = DealsAdapter(data.toMutableList())
+        mDealsAdapter = DealsAdapter(data.toMutableList(), activity!!.applicationContext)
         recycler_view?.adapter = mDealsAdapter
     }
 
