@@ -13,6 +13,5 @@ interface DealsContract {
 
     interface DealsPresenter : BaseContract.Presenter{
         fun processGetDeals(sessionToken: String, fragmentName: String)
-        fun getDealsList(dealsListPerPage: List<Datum>): MutableList<Datum>
     }
 }

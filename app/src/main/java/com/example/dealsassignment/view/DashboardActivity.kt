@@ -26,6 +26,7 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         setEventListener()
     }
 
+    //setting up the items present in navigation drawer
     private fun setNavigationDrawer() {
         //create default navigation drawer toggle
         val toggle = ActionBarDrawerToggle(
@@ -49,6 +50,7 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         nav_view.setNavigationItemSelectedListener(this)
     }
 
+    //setting up the view pager
     private fun setViewPager() {
         //set viewpager adapter
         val pagerAdapter =
@@ -74,6 +76,10 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         })
     }
 
+    /**
+     * setEventListeners function
+     * used to set the event listener for elements
+     */
     private fun setEventListener() {
 
         floating_action_button.setOnClickListener{
@@ -81,6 +87,7 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
 
+    //handling the selected listener of items in navigation drawer
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
         val id = item.itemId
@@ -98,6 +105,7 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         return true
     }
 
+    //on back pressing the mobile back key
     override fun onBackPressed() {
         assert(drawer_layout != null)
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {

@@ -8,6 +8,9 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dealsassignment.R
 
+/**
+ * SplashActivity is used to show the first screen when the app launches
+ */
 class SplashActivity:AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

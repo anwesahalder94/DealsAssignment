@@ -13,10 +13,14 @@ class DealsPresenter(
     val dealsView: DealsContract.DealsView
 ) : DealsContract.DealsPresenter {
 
+    //setting the presenter with the view
     init {
         dealsView.setPresenter(this)
     }
 
+    /**
+     * processGetDeals method is used to process the deals response
+     */
     override fun processGetDeals(sessionToken: String, fragmentName: String) {
 
         dealsRepository.performGetTopDeals(
@@ -31,15 +35,5 @@ class DealsPresenter(
                     dealsView.onDealsSuccess(data)
                 }
             })
-    }
-
-    override fun getDealsList(dealsListPerPage: List<Datum>): MutableList<Datum> {
-        val dealsList = ArrayList<Datum>()
-        for (response in dealsListPerPage) {
-            if (response != null) {
-                dealsList.add(response)
-            }
-        }
-        return dealsList
     }
 }

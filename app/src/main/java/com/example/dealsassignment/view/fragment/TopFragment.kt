@@ -43,7 +43,10 @@ class TopFragment : Fragment(), DealsContract.DealsView {
         mProgressDialog.setTitle("Please wait")
         mProgressDialog.setCancelable(false)
 
+        //initializing the presenter
         mDealsPresenter = DealsPresenter(DealsRepository(DealsRemoteDataSource()), this)
+
+        //calling the function present in presenter by checking if the network is available or not
         if (AppUtils.isNetworkAvailable(activity!!.applicationContext)) {
             mProgressDialog.show()
             mDealsPresenter.processGetDeals(Constants.SESSION_TOKEN_VALUE, Constants.TOP_FRAGMENT)
@@ -51,6 +54,10 @@ class TopFragment : Fragment(), DealsContract.DealsView {
             Toast.makeText(activity!!.applicationContext, "Please check your internet", Toast.LENGTH_LONG).show()
         }
 
+        init()
+    }
+
+    private fun init() {
         layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         recycler_view?.setHasFixedSize(true)
@@ -60,6 +67,7 @@ class TopFragment : Fragment(), DealsContract.DealsView {
         onPullToRefresh()
     }
 
+    // onPullToRefresh is used to pull it down (and it will bounce back when released) to refresh the content in the fragment.
     private fun onPullToRefresh() {
         pullToRefresh.setOnRefreshListener {
             if (AppUtils.isNetworkAvailable(activity!!.applicationContext)) {
@@ -76,11 +84,15 @@ class TopFragment : Fragment(), DealsContract.DealsView {
         }
     }
 
+    //setting up adapter
     private fun setAdapter(data: List<Datum>) {
         mDealsAdapter = DealsAdapter(data.toMutableList(), activity!!.applicationContext)
         recycler_view?.adapter = mDealsAdapter
     }
 
+    /**
+     * onDealsSuccess method is used to show the success deals response
+     */
     override fun onDealsSuccess(dealsResponse: DealsResponse) {
         mProgressDialog.dismiss()
         if (dealsResponse != null) {
@@ -93,6 +105,9 @@ class TopFragment : Fragment(), DealsContract.DealsView {
         Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * setPresenter method is used to set the presenter from the view
+     */
     override fun setPresenter(presenter: DealsContract.DealsPresenter) {
 
         mDealsPresenter = presenter as DealsPresenter
