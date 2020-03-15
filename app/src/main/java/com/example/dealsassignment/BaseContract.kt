@@ -8,4 +8,5 @@ interface BaseContract {
 
     interface Presenter {
     }
+    
 }
